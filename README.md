@@ -8,9 +8,17 @@ This app was created to showcase modern mobile development skills with a smooth 
 
 Here’s a quick look at the app screens, designed using Material Design for a clean and intuitive feel:
 
-| Onboarding | Login | SignUp | Dashboard | Add | Filter |
-|------------|-------|--------|-----------|-----|--------|
-| ![Onboarding](./assets/git-readme/1.jpg) | ![Login](./assets/git-readme/2.jpg) | ![SignUp](./assets/git-readme/3.jpg) | ![Dashboard](./assets/git-readme/4.jpg) | ![Add](./assets/git-readme/5.jpg) | ![Filter](./assets/git-readme/6.jpg) |
+## 📱 App Preview
+
+Here’s a quick look at the app screens, designed using Material Design for a clean and intuitive feel:
+
+| Onboarding | Login | SignUp |
+|------------|-------|--------|
+| ![Onboarding](./assets/git-readme/1.jpg) | ![Login](./assets/git-readme/2.jpg) | ![SignUp](./assets/git-readme/3.jpg) |
+
+| Dashboard | Add | Filter |
+|-----------|-----|--------|
+| ![Dashboard](./assets/git-readme/4.jpg) | ![Add](./assets/git-readme/5.jpg) | ![Filter](./assets/git-readme/6.jpg) |
 
 ---
 
