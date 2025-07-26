@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Alert,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Task, TaskFormData, Priority } from '../types/Task';
@@ -39,6 +40,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -62,6 +64,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   }, [task, visible]);
 
   const handleSave = async () => {
+    if (loading) return;
     if (!formData.title.trim()) {
       Alert.alert('Error', 'Please enter a task title');
       return;
@@ -72,7 +75,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
       return;
     }
 
+    setLoading(true);
     const success = await onSave(formData);
+    setLoading(false);
     if (success) {
       onClose();
     } else {
@@ -102,12 +107,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
       <SafeAreaView style={styles.modalContainer}>
         <View style={styles.modalHeader}>
-          <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+          <TouchableOpacity onPress={loading ? undefined : onClose} style={styles.headerButton} disabled={loading}>
             <Text style={styles.cancelButton}>Cancel</Text>
           </TouchableOpacity>
           <Text style={styles.modalTitle}>{title}</Text>
-          <TouchableOpacity onPress={handleSave} style={styles.headerButton}>
-            <Text style={styles.saveButton}>Save</Text>
+          <TouchableOpacity onPress={handleSave} style={styles.headerButton} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator size="small" color={COLORS.support} />
+            ) : (
+              <Text style={styles.saveButton}>Save</Text>
+            )}
           </TouchableOpacity>
         </View>
 

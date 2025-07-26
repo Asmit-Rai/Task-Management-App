@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -7,134 +7,137 @@ import {
   StyleSheet,
   ScrollView,
   TouchableWithoutFeedback,
+  SafeAreaView,
 } from 'react-native';
-import { FilterOptions, Priority } from '../types/Task';
+import { Ionicons } from '@expo/vector-icons';
+import { FilterOptions, Priority } from '../types/Task'; 
+import COLORS from '@/constants/Colors';
 
-interface FilterDropdownProps {
+interface FilterSheetProps {
   visible: boolean;
   onClose: () => void;
   filterOptions: FilterOptions;
   onFilterChange: (options: FilterOptions) => void;
 }
 
-const FilterDropdown: React.FC<FilterDropdownProps> = ({
+const ALL_PRIORITIES_OPTION = { label: 'All', value: null };
+const PRIORITY_OPTIONS: { label: string; value: Priority | null }[] = [
+  ALL_PRIORITIES_OPTION,
+  { label: 'High', value: 'High' },
+  { label: 'Medium', value: 'Medium' },
+  { label: 'Low', value: 'Low' },
+];
+
+const ALL_STATUS_OPTION = { label: 'All', value: null };
+const STATUS_OPTIONS: { label: string; value: boolean | null }[] = [
+  ALL_STATUS_OPTION,
+  { label: 'Incomplete', value: false },
+  { label: 'Completed', value: true },
+];
+
+const FilterSheet: React.FC<FilterSheetProps> = ({
   visible,
   onClose,
   filterOptions,
   onFilterChange,
 }) => {
-  const updateFilter = (updates: Partial<FilterOptions>) => {
-    onFilterChange({ ...filterOptions, ...updates });
+  const [tempFilters, setTempFilters] = useState<FilterOptions>(filterOptions);
+  useEffect(() => {
+    if (visible) {
+      setTempFilters(filterOptions);
+    }
+  }, [visible, filterOptions]);
+
+  const handleApplyFilters = () => {
+    onFilterChange(tempFilters);
     onClose();
+  };
+  
+  const handleReset = () => {
+    const initialFilters: FilterOptions = { priority: null, completed: null, sortBy: 'dueDate', sortOrder: 'asc' };
+    setTempFilters(initialFilters);
+  };
+
+  const updateFilter = (updates: Partial<FilterOptions>) => {
+    setTempFilters(prev => ({ ...prev, ...updates }));
   };
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <TouchableWithoutFeedback>
-          <View style={styles.dropdown}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeButtonText}>×</Text>
-            </TouchableOpacity>
-            <ScrollView
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-              bounces={false}
-            >
-              <Text style={styles.title}>Filter & Sort</Text>
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Priority</Text>
-                <TouchableOpacity
-                  style={[styles.item, !filterOptions.priority && styles.selectedItem]}
-                  onPress={() => updateFilter({ priority: null })}
-                >
-                  <Text style={styles.itemText}>All Priorities</Text>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.overlay}>
+          <TouchableWithoutFeedback>
+            <SafeAreaView style={styles.container}>
+              <View style={styles.header}>
+                 <TouchableOpacity onPress={handleReset}>
+                  <Text style={styles.headerButtonText}>Reset</Text>
                 </TouchableOpacity>
-                
-                {(['High', 'Medium', 'Low'] as Priority[]).map((priority) => (
-                  <TouchableOpacity
-                    key={priority}
-                    style={[styles.item, filterOptions.priority === priority && styles.selectedItem]}
-                    onPress={() => updateFilter({ priority })}
-                  >
-                    <Text style={styles.itemText}>{priority} Priority</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Status</Text>
-                <TouchableOpacity
-                  style={[styles.item, filterOptions.completed === null && styles.selectedItem]}
-                  onPress={() => updateFilter({ completed: null })}
-                >
-                  <Text style={styles.itemText}>All Tasks</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.item, filterOptions.completed === false && styles.selectedItem]}
-                  onPress={() => updateFilter({ completed: false })}
-                >
-                  <Text style={styles.itemText}>Pending Tasks</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.item, filterOptions.completed === true && styles.selectedItem]}
-                  onPress={() => updateFilter({ completed: true })}
-                >
-                  <Text style={styles.itemText}>Completed Tasks</Text>
+                <Text style={styles.headerTitle}>Filters</Text>
+                <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
+                  <Ionicons name="close" size={24} color="#333" />
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Sort By</Text>
-                <TouchableOpacity
-                  style={[styles.item, filterOptions.sortBy === 'dueDate' && styles.selectedItem]}
-                  onPress={() => updateFilter({ sortBy: 'dueDate' })}
-                >
-                  <Text style={styles.itemText}>Due Date</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.item, filterOptions.sortBy === 'priority' && styles.selectedItem]}
-                  onPress={() => updateFilter({ sortBy: 'priority' })}
-                >
-                  <Text style={styles.itemText}>Priority</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.item, filterOptions.sortBy === 'createdAt' && styles.selectedItem]}
-                  onPress={() => updateFilter({ sortBy: 'createdAt' })}
-                >
-                  <Text style={styles.itemText}>Created Date</Text>
-                </TouchableOpacity>
-              </View>
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Priority</Text>
+                  <View style={styles.chipsContainer}>
+                    {PRIORITY_OPTIONS.map(({ label, value }) => (
+                      <TouchableOpacity
+                        key={label}
+                        style={[
+                          styles.chip,
+                          tempFilters.priority === value && styles.chipSelected,
+                        ]}
+                        onPress={() => updateFilter({ priority: value })}
+                      >
+                        <Text style={[
+                          styles.chipText,
+                          tempFilters.priority === value && styles.chipTextSelected,
+                        ]}>{label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Status</Text>
+                  <View style={styles.chipsContainer}>
+                    {STATUS_OPTIONS.map(({ label, value }) => (
+                      <TouchableOpacity
+                        key={label}
+                        style={[
+                          styles.chip,
+                          tempFilters.completed === value && styles.chipSelected,
+                        ]}
+                        onPress={() => updateFilter({ completed: value })}
+                      >
+                        <Text style={[
+                          styles.chipText,
+                          tempFilters.completed === value && styles.chipTextSelected,
+                        ]}>{label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              </ScrollView>
 
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Order</Text>
+              <View style={styles.footer}>
                 <TouchableOpacity
-                  style={[styles.item, filterOptions.sortOrder === 'asc' && styles.selectedItem]}
-                  onPress={() => updateFilter({ sortOrder: 'asc' })}
+                  style={styles.applyButton}
+                  onPress={handleApplyFilters}
                 >
-                  <Text style={styles.itemText}>Ascending</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.item, filterOptions.sortOrder === 'desc' && styles.selectedItem]}
-                  onPress={() => updateFilter({ sortOrder: 'desc' })}
-                >
-                  <Text style={styles.itemText}>Descending</Text>
+                  <Text style={styles.applyButtonText}>Show Results</Text>
                 </TouchableOpacity>
               </View>
-            </ScrollView>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableOpacity style={StyleSheet.absoluteFill} onPress={onClose} />
-      </View>
+            </SafeAreaView>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -142,96 +145,89 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(49, 68, 108, 0.18)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
   },
-  dropdown: {
+  container: {
     backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingVertical: 28,
-    paddingHorizontal: 24,
-    margin: 20,
-    maxWidth: 340,
-    minWidth: 280,
-    maxHeight: '85%',
-    shadowColor: '#31446C',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 12,
-    borderWidth: 1,
-    borderColor: '#F5A92122',
-    zIndex: 2,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '75%',
+    paddingTop: 12,
   },
-  closeButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    zIndex: 10,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 16,
-    width: 32,
-    height: 32,
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
-  closeButtonText: {
-    fontSize: 22,
-    color: '#31446C',
-    fontWeight: '700',
-    lineHeight: 28,
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#31446C',
-    marginBottom: 18,
-    textAlign: 'center',
-    letterSpacing: 0.2,
+  headerButtonText: {
+    fontSize: 16,
+    color: COLORS.support, 
+  },
+  closeIcon: {
+    padding: 4,
   },
   section: {
-    marginBottom: 22,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F5A92122',
-    paddingBottom: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#666AF6',
-    marginBottom: 10,
-    letterSpacing: 0.1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#333',
   },
-  item: {
-    paddingVertical: 11,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    marginBottom: 4,
-    backgroundColor: '#F8F9FA',
+  chipsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  chip: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
     borderWidth: 1,
     borderColor: 'transparent',
-    transitionDuration: '150ms',
   },
-  selectedItem: {
-    backgroundColor: '#878AF5',
-    borderColor: '#666AF6',
-    shadowColor: '#878AF5',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.10,
-    shadowRadius: 6,
+  chipSelected: {
+    backgroundColor: COLORS.primary,
   },
-  itemText: {
-    fontSize: 15,
-    color: '#31446C',
-    textAlign: 'center',
-    fontWeight: '600',
-    letterSpacing: 0.1,
+  chipText: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
   },
-  scrollContent: {
-    paddingBottom: 8,
+  chipTextSelected: {
+    color: '#fff',
+  },
+  footer: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    backgroundColor: '#fff',
+  },
+  applyButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  applyButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
-export default FilterDropdown;
+export default FilterSheet;

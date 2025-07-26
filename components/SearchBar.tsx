@@ -14,6 +14,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChangeText, placeholder 
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}
+      placeholderTextColor="#888"
     />
   );
 };

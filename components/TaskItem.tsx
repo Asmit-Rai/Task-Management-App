@@ -36,7 +36,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   const handleLongPress = () => {
     Alert.alert(
-      'Task Options',
+      'Options',
       'What would you like to do?',
       [
         { text: 'Edit', onPress: () => onEdit(task) },

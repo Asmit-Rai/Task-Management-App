@@ -5,6 +5,8 @@ import {
   StatusBar,
   ScrollView,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { Task, FilterOptions } from "../../types/Task";
@@ -92,74 +94,82 @@ const DashboardScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#878AF5" />
-      <Header
-        onFilterPress={() => setShowFilterDropdown(true)}
-        onLogout={logout}
-      />
-
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Search tasks..."
-      />
-
-      <ScrollView
-        style={styles.content}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#878AF5"]}
-            tintColor="#878AF5"
-          />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={
+          Platform.OS === "ios" ? 0 : StatusBar.currentHeight || 0
         }
       >
-        {filteredTasks.length === 0 ? (
-          <EmptyState
-            message={
-              searchQuery
-                ? "No tasks found matching your search"
-                : getRandomEmptyTaskMessage()
-            }
-          />
-        ) : (
-          <TaskList
-            tasks={filteredTasks}
-            onToggleComplete={handleToggleComplete}
-            onEditTask={setEditingTask}
-            onDeleteTask={handleDeleteTask}
-          />
-        )}
-      </ScrollView>
+        <Header
+          onFilterPress={() => setShowFilterDropdown(true)}
+          onLogout={logout}
+        />
 
-      <AddButton onPress={() => setShowAddModal(true)} />
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search tasks..."
+        />
 
-      <TaskModal
-        visible={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSave={handleAddTask}
-        title="New Task"
-      />
-
-      <TaskModal
-        visible={!!editingTask}
-        onClose={() => setEditingTask(null)}
-        onSave={(taskData) => {
-          if (editingTask) {
-            return handleUpdateTask(editingTask.id, taskData);
+        <ScrollView
+          style={styles.content}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#878AF5"]}
+              tintColor="#878AF5"
+            />
           }
-          return Promise.resolve(false);
-        }}
-        task={editingTask}
-        title="Edit Task"
-      />
+        >
+          {filteredTasks.length === 0 ? (
+            <EmptyState
+              message={
+                searchQuery
+                  ? "No tasks found matching your search"
+                  : getRandomEmptyTaskMessage()
+              }
+            />
+          ) : (
+            <TaskList
+              tasks={filteredTasks}
+              onToggleComplete={handleToggleComplete}
+              onEditTask={setEditingTask}
+              onDeleteTask={handleDeleteTask}
+            />
+          )}
+        </ScrollView>
 
-      <FilterDropdown
-        visible={showFilterDropdown}
-        onClose={() => setShowFilterDropdown(false)}
-        filterOptions={filterOptions}
-        onFilterChange={setFilterOptions}
-      />
+        <AddButton onPress={() => setShowAddModal(true)} />
+
+        <TaskModal
+          visible={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onSave={handleAddTask}
+          title="New Task"
+        />
+
+        <TaskModal
+          visible={!!editingTask}
+          onClose={() => setEditingTask(null)}
+          onSave={(taskData) => {
+            if (editingTask) {
+              return handleUpdateTask(editingTask.id, taskData);
+            }
+            return Promise.resolve(false);
+          }}
+          task={editingTask}
+          title="Edit Task"
+        />
+
+        <FilterDropdown
+          visible={showFilterDropdown}
+          onClose={() => setShowFilterDropdown(false)}
+          filterOptions={filterOptions}
+          onFilterChange={setFilterOptions}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -168,6 +178,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
+    marginTop:20
   },
   content: {
     flex: 1,
