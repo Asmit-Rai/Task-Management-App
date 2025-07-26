@@ -1,50 +1,83 @@
-# Welcome to your Expo app 👋
+# 🗂️ Task Management App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A clean and simple mobile app to help you stay organized and manage your daily tasks — built using React Native, Expo, and TypeScript, with Firebase handling all the backend magic.
 
-## Get started
+This app was created to showcase modern mobile development skills with a smooth user interface, strong functionality, and good code structure.
 
-1. Install dependencies
+## 📱 App Preview
 
-   ```bash
-   npm install
-   ```
+Here’s a quick look at the app screens, designed using Material Design for a clean and intuitive feel:
 
-2. Start the app
+| Onboarding | Login | SignUp | Dashboard | Add | Filter |
+|------------|-------|--------|-----------|-----|--------|
+| ![Onboarding](./assets/git-readme/1.jpg) | ![Login](./assets/git-readme/2.jpg) | ![SignUp](./assets/git-readme/3.jpg) | ![Dashboard](./assets/git-readme/4.jpg) | ![Add](./assets/git-readme/5.jpg) | ![Filter](./assets/git-readme/6.jpg) |
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 📦 Download the App
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+You can try the app directly on your Android device:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+[**⬇️ Download Task Management App (.apk)**](./assets/git-readme/Task%20Management.apk)
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## ✨ Key Features
+
+### 🔐 Authentication
+- Register and log in securely using email & password (Firebase Auth)
+- Friendly error messages if something goes wrong
+
+### ✅ Manage Your Tasks
+- Add new tasks with title, description, due date & priority
+- View your task list in a scrollable layout
+- Edit any task details
+- Delete tasks you no longer need
+- Mark as done with a simple tap
+
+### ⚙️ Smart Features
+- Filter tasks by priority (Low, Medium, High) and status (Completed/Incomplete)
+- Sort automatically by due date
+
+### 🎨 UI & UX
+- Follows Material Design for a clean, modern look
+- Works great on both iOS and Android
+- Easy and smooth navigation between screens
+
+## 🔧 Tech Stack
+- **Frontend**: React Native + Expo + TypeScript
+- **Backend**: Firebase (Auth + Firestore)
+- **Navigation**: Expo Router
+- **State Management**: React Context + Hooks
+- **Date Handling**: date-fns for formatting & comparisons
+
+## 🚀 Getting Started
+
+### ✅ What You’ll Need
+- Node.js (use the LTS version)
+- npm or yarn
+- Expo Go app on your phone (iOS/Android)
+- Expo CLI (install globally):
 
 ```bash
-npm run reset-project
+npm install -g expo-cli
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 💻 Setup Instructions
 
-## Learn more
+#### 🔁 Clone the Project
+```bash
+git clone https://github.com/asmit-rai/Task-Management-App.git
+cd Task-Management-App
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+#### 📦 Install Dependencies
+```bash
+npm install
+```
+#### ▶️ Run the App
+```bash
+npx expo start
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Scan the QR code using the Expo Go app to open the app on your device.
